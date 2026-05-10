@@ -9,9 +9,25 @@ public interface UserService {
     /**
      * Creates a new user.
      *
-     * @param user The user to be created
-     * @return The created user
+     * @param user the user to be created
+     * @return the created user
      */
     User createUser(User user);
+
+    /**
+     * Deletes the user with the given ID.
+     *
+     * @param userId ID of the user to delete
+     */
+    void deleteUser(Long userId);
+
+    /**
+     * Updates an existing user with data from the given DTO.
+     *
+     * @param userId  ID of the user to update
+     * @param userDto DTO carrying the new field values
+     * @return the updated user
+     */
+    User updateUser(Long userId, UserDto userDto);
 
 }

@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.wsb.fitnesstracker.user.api.User;
+import pl.wsb.fitnesstracker.user.api.UserDto;
+import pl.wsb.fitnesstracker.user.api.UserNotFoundException;
 import pl.wsb.fitnesstracker.user.api.UserProvider;
 import pl.wsb.fitnesstracker.user.api.UserService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +42,33 @@ class UserServiceImpl implements UserService, UserProvider {
     @Override
     public List<User> findAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public void deleteUser(final Long userId) {
+        log.info("Deleting User with ID {}", userId);
+        userRepository.deleteById(userId);
+    }
+
+    @Override
+    public User updateUser(final Long userId, final UserDto userDto) {
+        log.info("Updating User with ID {}", userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        user.update(userDto.firstName(), userDto.lastName(), userDto.birthdate(), userDto.email());
+        return userRepository.save(user);
+    }
+
+    @Override
+    public List<User> findUsersOlderThan(final LocalDate date) {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getBirthdate().isBefore(date))
+                .toList();
+    }
+
+    @Override
+    public List<User> findUsersByEmail(final String email) {
+        return userRepository.findByEmailContainingIgnoreCase(email);
     }
 
 }
